@@ -24,7 +24,16 @@
 
 ;;;;;;;;;;;; view
 
-
+; render-calculator-display : Calculator -> Xexpr
+; this renders the display of the calculator in html
+(define (render-calculator-display calc)
+  `(div ((class "calculator-display"))
+	(div ((class "prev-input"))
+	     ,(string-append
+	       (number->string (calculator-result calc))
+	       " "
+	       (calculator-operation calc)))
+	,(number->string (calculator-input calc))))
 
 ;;;;;;;;;;;; run the program
 (define (start req)
@@ -35,4 +44,4 @@
        (body
 	 (h1 "calculator")))))
 
-(serve/servlet start)
+(provide (all-defined-out))
