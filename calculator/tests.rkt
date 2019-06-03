@@ -17,9 +17,9 @@
   (response/xexpr
     `(li
        ,(string-append
-	  (number->string (calculator-result rcalc))
-	  (calculator-operation rcalc)
-	  (number->string (calculator-input rcalc))))))
+          (number->string (calculator-result rcalc))
+          (calculator-operation rcalc)
+          (number->string (calculator-input rcalc))))))
 (define process-request-tester
   (make-servlet-tester process-request-servlet))
 (check-equal?
@@ -157,11 +157,99 @@
 (check-equal?
   (render-calculator-display (calculator 5 "+" 5))
   '(div ((class "calculator-display"))
-	(div ((class "prev-input")) "5 +")
-	"5"))
+        (div ((class "prev-input")) "5 +")
+        "5"))
 (check-equal?
   (render-calculator-display (calculator 4.5 "^" 0.5))
   '(div ((class "calculator-display"))
-	(div ((class "prev-input")) "4.5 ^")
-	"0.5"))
+        (div ((class "prev-input")) "4.5 ^")
+        "0.5"))
 
+; render-calculator-keypad : -> Xexpr
+; this renders the keypad in html
+; and will make the proper request when a key is pressed
+; takes a Calculator so data can be transferred via form
+(check-equal?
+  (render-calculator-keypad
+    (calculator 5 "+" 5))
+  '(div ((class "calculator-keypad"))
+        (form
+          (input
+            ((type "hidden")
+             (name "calculator-result")
+             (value "5")))
+          (input
+            ((type "hidden")
+             (name "calculator-operation")
+             (value "+")))
+          (input
+            ((type "hidden")
+             (name "calculator-input")
+             (value "5")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "1")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "2")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "3")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "+")))
+          (br)
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "4")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "5")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "6")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "-")))
+          (br)
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "7")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "8")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "9")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "*")))
+          (br)
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "0")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "=")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "^")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "/"))))))

@@ -1,4 +1,4 @@
-; NOTE TO SELF: continue woth process-request
+; NOTE TO SELF: continue with render-calculator-keypad
 
 ; language and modules
 #lang racket
@@ -39,35 +39,35 @@
 (define (process-request req)
   (if (calculator-request? req)
       (let*
-	([binds (request-bindings/raw req)]
-	[cr-result
-	  (string->number
-	    (bytes->string/utf-8
-	      (binding:form-value
-		(bindings-assq #"calculator-result" binds))))]
-	[cr-operation
-	  (bytes->string/utf-8
-	    (binding:form-value
-	      (bindings-assq #"calculator-operation" binds)))]
-	[cr-input
-	  (string->number
-	    (bytes->string/utf-8
-	      (binding:form-value
-		(bindings-assq #"calculator-input" binds))))]
-	[cr-button
-	  (bytes->string/utf-8
-	    (binding:form-value
-	      (bindings-assq #"button-pressed" binds)))])
-	(cond
-	  [(string-contains? "+-/*^" cr-button)            ; button is an operation
-	   (calculator cr-result cr-button cr-input)]
-	  [(string=? "=" cr-button)                        ; button is "="
-	   (evaluate-calculator
-	     (calculator cr-result cr-operation cr-input))]
-	  [(string-contains? "0123456789" cr-button)       ; button is a number
-	   (calculator cr-result
-		       cr-operation
-		       (number-append cr-input (string->number cr-button)))]))
+        ([binds (request-bindings/raw req)]
+         [cr-result
+           (string->number
+             (bytes->string/utf-8
+               (binding:form-value
+                 (bindings-assq #"calculator-result" binds))))]
+         [cr-operation
+           (bytes->string/utf-8
+             (binding:form-value
+               (bindings-assq #"calculator-operation" binds)))]
+         [cr-input
+           (string->number
+             (bytes->string/utf-8
+               (binding:form-value
+                 (bindings-assq #"calculator-input" binds))))]
+         [cr-button
+           (bytes->string/utf-8
+             (binding:form-value
+               (bindings-assq #"button-pressed" binds)))])
+        (cond
+          [(string-contains? "+-/*^" cr-button)            ; button is an operation
+           (calculator cr-result cr-button cr-input)]
+          [(string=? "=" cr-button)                        ; button is "="
+           (evaluate-calculator
+             (calculator cr-result cr-operation cr-input))]
+          [(string-contains? "0123456789" cr-button)       ; button is a number
+           (calculator cr-result
+                       cr-operation
+                       (number-append cr-input (string->number cr-button)))]))
       (calculator 0 "+" 0)))
 
 ; evaluate-calculator : Calculator -> Calculator
@@ -90,8 +90,8 @@
     [(string=? op "-") (- num1 num2)]
     [(string=? op "*") (* num1 num2)]
     [(string=? op "/") (if (not (zero? num2))
-			   (/ num1 num2)
-			   0)]
+                           (/ num1 num2)
+                           0)]
     [(string=? op "^") (expt num1 num2)]
     [else num2]))
 
@@ -103,11 +103,11 @@
     (request-bindings/raw req))
   (if (request? req)
       (and
-	(bindings-assq #"calculator-result" binds)
-	(bindings-assq #"calculator-operation" binds)
-	(bindings-assq #"calculator-input" binds)
-	(bindings-assq #"button-pressed" binds)
-	#t)
+        (bindings-assq #"calculator-result" binds)
+        (bindings-assq #"calculator-operation" binds)
+        (bindings-assq #"calculator-input" binds)
+        (bindings-assq #"button-pressed" binds)
+        #t)
       #f))
 
 ; boolean->string : Boolean -> String
@@ -125,28 +125,126 @@
 
 ;;;;;;;;;;;; view
 
+; render-calculator : Calculator -> Xexpr
+; this takes a calculator and completely renders it
+; including display and keypad
+(define (render-calculator calc)
+  `(html
+     (head
+       (title "calculator"))
+     (body
+       (h1 "calculator")
+       ,(render-calculator-display calc)
+       ,(render-calculator-keypad calc))))
+
 ; render-calculator-display : Calculator -> Xexpr
 ; this renders the display of the calculator in html
 (define (render-calculator-display calc)
   `(div ((class "calculator-display"))
-	(div ((class "prev-input"))
-	     ,(string-append
-	       (number->string (calculator-result calc))
-	       " "
-	       (calculator-operation calc)))
-	,(number->string (calculator-input calc))))
+        (div ((class "prev-input"))
+             ,(string-append
+                (number->string (calculator-result calc))
+                " "
+                (calculator-operation calc)))
+        ,(number->string (calculator-input calc))))
 
-; render-calculator-keypad : -> Xexpr
+; render-calculator-keypad : Calculator -> Xexpr
 ; this renders the keypad in html
 ; and will make the proper request when a key is pressed
+; takes a Calculator so data can be transferred via form
+(define (render-calculator-keypad calc)
+  `(div ((class "calculator-keypad"))
+        (form
+          (input
+            ((type "hidden")
+             (name "calculator-result")
+             (value ,(number->string (calculator-result calc)))))
+          (input
+            ((type "hidden")
+             (name "calculator-operation")
+             (value ,(calculator-operation calc))))
+          (input
+            ((type "hidden")
+             (name "calculator-input")
+             (value ,(number->string (calculator-input calc)))))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "1")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "2")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "3")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "+")))
+          (br)
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "4")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "5")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "6")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "-")))
+          (br)
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "7")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "8")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "9")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "*")))
+          (br)
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "0")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "=")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "^")))
+          (input
+            ((type "submit")
+             (name "calculator-input")
+             (value "/"))))))
+
 
 ;;;;;;;;;;;; run the program
 (define (start req)
   (response/xexpr
     `(html
        (head
-	 (title "calculator"))
+         (title "calculator"))
        (body
-	 (h1 "calculator")))))
+         (h1 "calculator")
+         ,(render-calculator-display (calculator 4 "^" 2))
+         ,(render-calculator-keypad (calculator 4 "^" 2))))))
 
 (provide (all-defined-out))
