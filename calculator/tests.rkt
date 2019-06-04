@@ -152,6 +152,110 @@
 
 ;;;;;;;;;;;; view
 
+; calculator-page : CalculatorRequest -> response/xexpr
+; This takes a calculatorrequest as input
+; and renders and responds the page on which the calculator appears
+(define calculator-page-tester
+  (make-servlet-tester calculator-page))
+(check-equal?
+  (calculator-page-tester
+    "/"
+    (list
+      (binding:form #"calculator-result" #"5")
+      (binding:form #"calculator-operation" #"+")
+      (binding:form #"calculator-input" #"0")
+      (binding:form #"button-pressed" #"5")))
+  '(html ()
+     (head  ((title "calculator")))
+     (body ()
+       (h1 () "calculator")
+       (div ((class "calculator-display"))
+            (div ((class "prev-input"))
+                 "5 +")
+            "5")
+       (div ((class "calculator-keypad"))
+             (form ()
+               (input
+                 ((name "calculator-result")
+                  (type "hidden")
+                  (value "5")))
+               (input
+                 ((name "calculator-operation")
+                  (type "hidden")
+                  (value "+")))
+               (input
+                 ((name "calculator-input")
+                  (type "hidden")
+                  (value "5")))
+               ; visual
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "1")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "2")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "3")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "+")))
+               (br ())
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "4")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "5")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "6")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "-")))
+               (br ())
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "7")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "8")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "9")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "*")))
+               (br ())
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "0")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "=")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "^")))
+               (input
+                 ((name "button-pressed")
+                  (type "submit")
+                  (value "/"))))))))
+
 ; render-calculator-display : Calculator -> Xexpr
 ; this renders the display of the calculator in html
 (check-equal?
@@ -188,68 +292,84 @@
              (value "5")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "1")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "2")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "3")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "+")))
           (br)
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "4")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "5")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "6")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "-")))
           (br)
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "7")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "8")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "9")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "*")))
           (br)
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "0")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "=")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "^")))
           (input
             ((type "submit")
-             (name "calculator-input")
+             (name "button-pressed")
              (value "/"))))))
+
+; calculator-key : String -> Xexpr
+; Takes a string and turns it into a button on the html calc
+; used to make calculator easier and faster
+(check-equal?
+  (calculator-key "+")
+  '(input
+     ((type "submit")
+      (name "button-pressed")
+      (value "+"))))
+(check-equal?
+  (calculator-key "4")
+  '(input
+     ((type "submit")
+      (name "button-pressed")
+      (value "4"))))

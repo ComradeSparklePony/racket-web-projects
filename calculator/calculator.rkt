@@ -1,5 +1,3 @@
-; NOTE TO SELF: continue with render-calculator-keypad
-
 ; language and modules
 #lang racket
 
@@ -125,13 +123,22 @@
 
 ;;;;;;;;;;;; view
 
+; calculator-page : CalculatorRequest -> response/xexpr
+; This takes a calculatorrequest as input
+; and renders and responds the page on which the calculator appears
+(define (calculator-page req)
+  (define calc
+    (process-request req))
+  (response/xexpr
+    (render-calculator calc)))
+
 ; render-calculator : Calculator -> Xexpr
 ; this takes a calculator and completely renders it
 ; including display and keypad
 (define (render-calculator calc)
   `(html
      (head
-       (title "calculator"))
+       ((title "calculator")))
      (body
        (h1 "calculator")
        ,(render-calculator-display calc)
@@ -167,84 +174,37 @@
             ((type "hidden")
              (name "calculator-input")
              (value ,(number->string (calculator-input calc)))))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "1")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "2")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "3")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "+")))
+          ,(calculator-key "1")
+          ,(calculator-key "2")
+          ,(calculator-key "3")
+          ,(calculator-key "+")
           (br)
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "4")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "5")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "6")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "-")))
+          ,(calculator-key "4")
+          ,(calculator-key "5")
+          ,(calculator-key "6")
+          ,(calculator-key "-")
           (br)
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "7")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "8")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "9")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "*")))
+          ,(calculator-key "7")
+          ,(calculator-key "8")
+          ,(calculator-key "9")
+          ,(calculator-key "*")
           (br)
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "0")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "=")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "^")))
-          (input
-            ((type "submit")
-             (name "calculator-input")
-             (value "/"))))))
+          ,(calculator-key "0")
+          ,(calculator-key "=")
+          ,(calculator-key "^")
+          ,(calculator-key "/"))))
 
+; calculator-key : String -> Xexpr
+; Takes a string and turns it into a button on the html calc
+; used to make calculator easier and faster
+(define (calculator-key val)
+  `(input
+     ((type "submit")
+      (name "button-pressed")
+      (value ,val))))
 
 ;;;;;;;;;;;; run the program
 (define (start req)
-  (response/xexpr
-    `(html
-       (head
-         (title "calculator"))
-       (body
-         (h1 "calculator")
-         ,(render-calculator-display (calculator 4 "^" 2))
-         ,(render-calculator-keypad (calculator 4 "^" 2))))))
+  (calculator-page req))
 
 (provide (all-defined-out))
